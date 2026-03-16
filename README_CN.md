@@ -40,11 +40,27 @@ pip install -r requirements.txt
 
 | 变量名 | 是否必填 | 默认值 | 说明 |
 |--------|----------|--------|------|
-| `OPENAI_API_KEY` | ✅ | — | LLM 服务的 API 密钥 |
-| `OPENAI_BASE_URL` | ❌ | OpenAI 官方地址 | 兼容 OpenAI 接口的自定义地址 |
-| `OPENAI_MODEL` | ❌ | `gpt-4o-mini` | 模型名称 |
+| `TALE_LLM_PROVIDER` | ❌ | `openai` | LLM 服务商：`openai` / `deepseek` / `qwen` / `kimi` / `grok` / `minmax` |
+| `TALE_LLM_API_KEY` | ❌ | — | API Key（优先级高于 `*_API_KEY`） |
+| `TALE_LLM_BASE_URL` | ❌ | — | OpenAI 兼容接口地址（优先级高于 `*_BASE_URL`） |
+| `TALE_LLM_MODEL` | ❌ | — | 模型名称（优先级高于 `*_MODEL`） |
 | `TALE_OUTPUT_DIR` | ❌ | `output/` | 报告输出目录 |
 | `TALE_MAX_RETRIES` | ❌ | `3` | 每篇小说审核失败后的最大重写次数 |
+
+不同服务商对应的环境变量
+------------------------
+当设置了 `TALE_LLM_PROVIDER` 后，TaleSeed 会按如下规则读取环境变量：
+
+- `openai`：`OPENAI_API_KEY`、`OPENAI_BASE_URL`、`OPENAI_MODEL`
+- `deepseek`：`DEEPSEEK_API_KEY`、`DEEPSEEK_BASE_URL`、`DEEPSEEK_MODEL`
+- `qwen`：`QWEN_API_KEY`、`QWEN_BASE_URL`、`QWEN_MODEL`
+- `kimi`：`KIMI_API_KEY`、`KIMI_BASE_URL`、`KIMI_MODEL`
+- `grok`：`GROK_API_KEY`、`GROK_BASE_URL`、`GROK_MODEL`
+- `minmax`：`MINMAX_API_KEY`、`MINMAX_BASE_URL`、`MINMAX_MODEL`
+
+说明：
+- 当 `provider=openai` 时，`OPENAI_BASE_URL` 可不填。
+- 对于非 OpenAI 的服务商，一般需要同时设置 `*_BASE_URL` 和 `*_MODEL`，具体取值请以对应服务商的 OpenAI 兼容接口文档为准。
 
 ## 使用方法
 

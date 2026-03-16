@@ -7,7 +7,13 @@ Usage
 
 Environment variables
 ---------------------
-    OPENAI_API_KEY   – required
+    TALE_LLM_PROVIDER – optional (openai/deepseek/qwen/kimi/grok/minmax; default: openai)
+    TALE_LLM_API_KEY  – optional (overrides provider-specific *_API_KEY)
+    TALE_LLM_BASE_URL – optional (overrides provider-specific *_BASE_URL)
+    TALE_LLM_MODEL    – optional (overrides provider-specific *_MODEL)
+
+    Legacy / compatibility for provider=openai:
+    OPENAI_API_KEY   – required when using OpenAI
     OPENAI_BASE_URL  – optional (for OpenAI-compatible third-party endpoints)
     OPENAI_MODEL     – optional (defaults to gpt-4o-mini)
     TALE_OUTPUT_DIR  – optional output directory (defaults to ./output)
@@ -71,12 +77,13 @@ def main(argv: list[str] | None = None) -> int:
         format="%(asctime)s [%(levelname)s] %(name)s – %(message)s",
     )
 
-    if not os.environ.get("OPENAI_API_KEY"):
-        print(
-            "Error: OPENAI_API_KEY is not set. "
-            "Please set it in your environment or in a .env file.",
-            file=sys.stderr,
-        )
+    from src.llm_client import LLMConfigurationError, get_settings
+
+    try:
+        # Validate early so we can fail fast with a clear error message.
+        get_settings(strict=True)
+    except LLMConfigurationError as exc:
+        print(f"Error: {exc}", file=sys.stderr)
         return 1
 
     seed: str = args.seed or ""

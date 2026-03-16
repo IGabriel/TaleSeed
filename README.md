@@ -40,11 +40,28 @@ Set the following environment variables (or place them in a `.env` file):
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `OPENAI_API_KEY` | ✅ | — | API key for the LLM service |
-| `OPENAI_BASE_URL` | ❌ | OpenAI | Base URL for OpenAI-compatible endpoints |
-| `OPENAI_MODEL` | ❌ | `gpt-4o-mini` | Model name |
+| `TALE_LLM_PROVIDER` | ❌ | `openai` | LLM provider: `openai` / `deepseek` / `qwen` / `kimi` / `grok` / `minmax` |
+| `TALE_LLM_API_KEY` | ❌ | — | Provider API key (overrides `*_API_KEY`) |
+| `TALE_LLM_BASE_URL` | ❌ | — | OpenAI-compatible base URL (overrides `*_BASE_URL`) |
+| `TALE_LLM_MODEL` | ❌ | — | Model name (overrides `*_MODEL`) |
 | `TALE_OUTPUT_DIR` | ❌ | `output/` | Directory for generated reports |
 | `TALE_MAX_RETRIES` | ❌ | `3` | Maximum rewrites per novel on failed review |
+
+Provider-specific variables
+--------------------------
+When `TALE_LLM_PROVIDER` is set, TaleSeed will look for these variables:
+
+- `openai`: `OPENAI_API_KEY`, `OPENAI_BASE_URL`, `OPENAI_MODEL`
+- `deepseek`: `DEEPSEEK_API_KEY`, `DEEPSEEK_BASE_URL`, `DEEPSEEK_MODEL`
+- `qwen`: `QWEN_API_KEY`, `QWEN_BASE_URL`, `QWEN_MODEL`
+- `kimi`: `KIMI_API_KEY`, `KIMI_BASE_URL`, `KIMI_MODEL`
+- `grok`: `GROK_API_KEY`, `GROK_BASE_URL`, `GROK_MODEL`
+- `minmax`: `MINMAX_API_KEY`, `MINMAX_BASE_URL`, `MINMAX_MODEL`
+
+Notes:
+- For `provider=openai`, `OPENAI_BASE_URL` is optional.
+- For non-OpenAI providers, you typically need to set both `*_BASE_URL` and
+    `*_MODEL` according to your provider's OpenAI-compatible API.
 
 ## Usage
 
