@@ -49,7 +49,7 @@ class TestGenerateAllNovels:
         with patch("src.generator.chat_json", side_effect=_mock_chat_json):
             novels = generate_all_novels("一颗流星")
 
-        assert len(novels) == 5
+        assert len(novels) == 10
 
     def test_all_styles_covered(self):
         with patch("src.generator.chat_json", side_effect=_mock_chat_json):

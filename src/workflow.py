@@ -2,13 +2,13 @@
 
 Flow
 ----
-For each of the five novel styles:
+For each of the ten novel styles:
   1. Generate a novel from the seed idea.
   2. Review the novel with the LLM reviewer.
   3. If the review fails, rewrite and review again — up to *max_retries* times.
   4. Record the final novel and its review (regardless of whether it passed).
 
-After all five novels are processed, build and return a :class:`~src.models.Report`.
+After all ten novels are processed, build and return a :class:`~src.models.Report`.
 """
 
 from __future__ import annotations

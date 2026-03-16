@@ -1,17 +1,19 @@
 # TaleSeed
 
+[English](README.md) | [中文](README_CN.md)
+
 Plant a seed of imagination, grow a novel. AI-powered story generation from a single spark of inspiration.
 
 ## Overview
 
 TaleSeed takes an initial creative idea ("脑洞") and uses a large language model to automatically:
 
-1. **Generate** five short novels in five distinctly different styles.
+1. **Generate** ten short novels in ten distinctly different styles.
 2. **Review** each novel with the LLM acting as a literary critic.
 3. **Rewrite** any novel that fails the quality review (score < 6/10) — up to a configurable number of retries.
 4. **Report** — produce a Markdown + JSON report covering novel name, content summary, writing style, and creative approach.
 
-### Five Novel Styles
+### Ten Novel Styles
 
 | Style | Description |
 |-------|-------------|
@@ -20,6 +22,11 @@ TaleSeed takes an initial creative idea ("脑洞") and uses a large language mod
 | 悬疑推理 | Mystery/thriller — layered puzzles, unexpected twists |
 | 奇幻魔法 | Fantasy/magic — imaginative world, unique magic systems |
 | 历史武侠 | Historical martial arts — classical tone, chivalric spirit |
+| 都市言情 | Urban romance — modern city life, realistic emotions |
+| 玄幻修仙 | Xianxia/cultivation — cultivation systems, immortal world |
+| 恐怖惊悚 | Horror/suspense — eerie atmosphere, psychological dread |
+| 青春校园 | Youth/campus — coming-of-age, friendships, first love |
+| 现实主义 | Realism — social reflection, authentic human experience |
 
 ## Installation
 

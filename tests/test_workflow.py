@@ -53,7 +53,7 @@ class TestWorkflow:
             report = run(_SEED, output_dir=tmp_path, verbose=False)
 
         assert isinstance(report, Report)
-        assert len(report.records) == 5
+        assert len(report.records) == 10
 
     def test_run_covers_all_styles(self, tmp_path: Path):
         def fake_generate(seed, style, attempt=1):

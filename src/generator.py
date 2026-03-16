@@ -21,6 +21,21 @@ _STYLE_GUIDANCE: dict[NovelStyle, str] = {
     NovelStyle.HISTORICAL: (
         "历史武侠风格：融合真实历史背景、江湖恩怨情仇、侠义精神，文字古朴凝练，人物形象鲜明。"
     ),
+    NovelStyle.URBAN: (
+        "都市言情风格：聚焦现代都市生活，情感细腻真实，描绘职场、家庭与爱情的多重交织，贴近当代读者的生活体验。"
+    ),
+    NovelStyle.XIANXIA: (
+        "玄幻修仙风格：构建宏大的修炼体系与仙侠世界，主角历经磨难不断突破，境界升华与家国情怀并重，充满东方神话色彩。"
+    ),
+    NovelStyle.HORROR: (
+        "恐怖惊悚风格：营造压抑诡异的氛围，以心理恐惧与未知威胁推动情节，结局出人意料，令读者心悸难安。"
+    ),
+    NovelStyle.CAMPUS: (
+        "青春校园风格：以校园生活为舞台，描绘青春期的懵懂情感、友情羁绊与成长蜕变，语言清新活泼，充满青春气息。"
+    ),
+    NovelStyle.REALISM: (
+        "现实主义风格：深刻反映社会现实与人性百态，人物塑造立体丰满，情节源于生活而高于生活，具有强烈的时代感与人文关怀。"
+    ),
 }
 
 _SYSTEM_PROMPT = """\
@@ -64,9 +79,9 @@ def generate_novel(seed: str, style: NovelStyle, attempt: int = 1) -> Novel:
 
 
 def generate_all_novels(seed: str) -> list[Novel]:
-    """Generate one novel for each of the five styles.
+    """Generate one novel for each of the ten styles.
 
-    Returns a list of five :class:`Novel` objects in the order defined by
+    Returns a list of ten :class:`Novel` objects in the order defined by
     :class:`NovelStyle`.
     """
     return [generate_novel(seed, style) for style in NovelStyle]
