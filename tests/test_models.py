@@ -18,7 +18,7 @@ from src.models import (
 class TestNovelStyle:
     def test_all_five_styles_exist(self):
         styles = list(NovelStyle)
-        assert len(styles) == 5
+        assert len(styles) == 10
 
     def test_style_values_are_chinese(self):
         for style in NovelStyle:

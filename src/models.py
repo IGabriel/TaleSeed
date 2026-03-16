@@ -9,13 +9,18 @@ from pydantic import BaseModel, Field
 
 
 class NovelStyle(str, Enum):
-    """Five distinctly different novel styles."""
+    """Ten distinctly different novel styles."""
 
     ROMANCE = "浪漫爱情"
     SCIFI = "科幻冒险"
     MYSTERY = "悬疑推理"
     FANTASY = "奇幻魔法"
     HISTORICAL = "历史武侠"
+    URBAN = "都市言情"
+    XIANXIA = "玄幻修仙"
+    HORROR = "恐怖惊悚"
+    CAMPUS = "青春校园"
+    REALISM = "现实主义"
 
 
 class ReviewStatus(str, Enum):
