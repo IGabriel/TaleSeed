@@ -33,7 +33,7 @@ from dotenv import load_dotenv
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="taleseed",
-        description="Plant a seed of imagination, grow five novels.",
+        description="Plant a seed of imagination, grow ten novels.",
     )
     parser.add_argument(
         "seed",

@@ -12,7 +12,7 @@ from src.reviewer import review_novel
 
 def _make_novel(title: str = "测试") -> Novel:
     return Novel(
-        style=NovelStyle.ROMANCE,
+        style=NovelStyle.SLOT_1,
         title=title,
         content="内容" * 200,
         writing_approach="思路",

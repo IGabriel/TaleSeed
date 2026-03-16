@@ -11,7 +11,7 @@ from src.reporter import generate_report, save_report
 
 def _make_report(seed: str = "测试脑洞") -> Report:
     novel = Novel(
-        style=NovelStyle.HISTORICAL,
+        style=NovelStyle.SLOT_5,
         title="江湖往事",
         content="刀光剑影中，\n\n一段传奇缓缓展开。",
         writing_approach="以历史为背景，融入武侠元素。",

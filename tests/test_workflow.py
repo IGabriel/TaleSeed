@@ -83,8 +83,8 @@ class TestWorkflow:
 
         def fake_review(novel):
             review_calls[novel.style] += 1
-            # Fail the first review for ROMANCE only
-            if novel.style == NovelStyle.ROMANCE and review_calls[novel.style] == 1:
+            # Fail the first review for SLOT_1 only
+            if novel.style == NovelStyle.SLOT_1 and review_calls[novel.style] == 1:
                 return _make_review(passed=False)
             return _make_review(passed=True)
 
@@ -94,9 +94,7 @@ class TestWorkflow:
         ):
             report = run(_SEED, max_retries=3, output_dir=tmp_path, verbose=False)
 
-        romance_record = next(
-            r for r in report.records if r.novel.style == NovelStyle.ROMANCE
-        )
+        romance_record = next(r for r in report.records if r.novel.style == NovelStyle.SLOT_1)
         # Should have 1 failed attempt in history, 1 successful final
         assert len(romance_record.rewrite_history) == 1
         assert romance_record.total_attempts == 2

@@ -9,18 +9,23 @@ from pydantic import BaseModel, Field
 
 
 class NovelStyle(str, Enum):
-    """Ten distinctly different novel styles."""
+    """Ten novel slots (no fixed style restriction).
 
-    ROMANCE = "浪漫爱情"
-    SCIFI = "科幻冒险"
-    MYSTERY = "悬疑推理"
-    FANTASY = "奇幻魔法"
-    HISTORICAL = "历史武侠"
-    URBAN = "都市言情"
-    XIANXIA = "玄幻修仙"
-    HORROR = "恐怖惊悚"
-    CAMPUS = "青春校园"
-    REALISM = "现实主义"
+    TaleSeed generates 10 different novels for the same seed idea. We keep a
+    stable 10-slot enum to preserve ordering and reporting, but we do NOT
+    impose any predefined genre/style constraints.
+    """
+
+    SLOT_1 = "第 1 篇"
+    SLOT_2 = "第 2 篇"
+    SLOT_3 = "第 3 篇"
+    SLOT_4 = "第 4 篇"
+    SLOT_5 = "第 5 篇"
+    SLOT_6 = "第 6 篇"
+    SLOT_7 = "第 7 篇"
+    SLOT_8 = "第 8 篇"
+    SLOT_9 = "第 9 篇"
+    SLOT_10 = "第 10 篇"
 
 
 class ReviewStatus(str, Enum):
@@ -95,13 +100,13 @@ class Report(BaseModel):
             lines += [
                 f"## {idx}. 《{novel.title}》",
                 "",
-                f"- **编写风格**：{novel.style.value}",
+                f"- **作品编号**：{novel.style.value}",
                 f"- **审核状态**：{review.status.value}",
                 f"- **综合评分**：{review.score:.1f} / 10",
                 f"  - 情节连贯性：{review.plot_score:.1f}",
                 f"  - 人物塑造：{review.character_score:.1f}",
                 f"  - 语言质量：{review.language_score:.1f}",
-                f"  - 风格一致性：{review.style_score:.1f}",
+                f"  - 文风一致性：{review.style_score:.1f}",
                 f"- **创作尝试次数**：{record.total_attempts}",
                 "",
                 "### 内容摘要",

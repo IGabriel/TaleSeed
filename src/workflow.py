@@ -61,7 +61,7 @@ def run(
 
     for style in NovelStyle:
         log(f"\n{'=' * 60}")
-        log(f"[生成] 风格：{style.value}")
+        log(f"[生成] {style.value}")
 
         attempt = 1
         novel = generate_novel(seed, style, attempt=attempt)

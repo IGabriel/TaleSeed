@@ -28,7 +28,7 @@ class TestNovelStyle:
 class TestNovel:
     def test_create_novel(self):
         novel = Novel(
-            style=NovelStyle.ROMANCE,
+            style=NovelStyle.SLOT_1,
             title="测试标题",
             content="测试内容",
             writing_approach="测试思路",
@@ -38,7 +38,7 @@ class TestNovel:
 
     def test_attempt_defaults_to_one(self):
         novel = Novel(
-            style=NovelStyle.SCIFI,
+            style=NovelStyle.SLOT_2,
             title="T",
             content="C",
             writing_approach="A",
@@ -92,7 +92,7 @@ class TestReviewResult:
 class TestNovelRecord:
     def _make_novel(self, attempt: int = 1) -> Novel:
         return Novel(
-            style=NovelStyle.MYSTERY,
+            style=NovelStyle.SLOT_3,
             title="T",
             content="C",
             writing_approach="A",
@@ -126,7 +126,7 @@ class TestNovelRecord:
 class TestReport:
     def _make_report(self) -> Report:
         novel = Novel(
-            style=NovelStyle.FANTASY,
+            style=NovelStyle.SLOT_4,
             title="魔法传说",
             content="第一段\n\n第二段",
             writing_approach="以魔法为核心",
@@ -155,7 +155,7 @@ class TestReport:
     def test_to_markdown_contains_style(self):
         report = self._make_report()
         md = report.to_markdown()
-        assert NovelStyle.FANTASY.value in md
+        assert NovelStyle.SLOT_4.value in md
 
     def test_to_markdown_contains_scores(self):
         report = self._make_report()

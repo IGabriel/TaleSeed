@@ -13,7 +13,7 @@ _SYSTEM_PROMPT = """\
   1. 情节连贯性（plot_score）：情节是否完整、逻辑是否自洽、转折是否合理
   2. 人物塑造（character_score）：人物性格是否鲜明、行为是否符合逻辑
   3. 语言质量（language_score）：文笔是否流畅、用词是否准确、句式是否多样
-  4. 风格一致性（style_score）：是否与指定风格高度吻合
+    4. 文风一致性（style_score）：文章整体文风是否统一，叙事是否连贯，是否出现明显风格/视角断裂
 
 综合评分（score）为上述四项的加权平均，权重各 25%。
 若综合评分低于 6 分，则审核不通过，需说明具体原因（rewrite_reason）。
@@ -38,7 +38,7 @@ def review_novel(novel: Novel) -> ReviewResult:
     """
     user_prompt = (
         f"小说标题：《{novel.title}》\n"
-        f"目标风格：{novel.style.value}\n\n"
+        f"作品编号：{novel.style.value}\n\n"
         f"小说正文：\n{novel.content}"
     )
 

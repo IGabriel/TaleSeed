@@ -21,16 +21,16 @@ def _mock_chat_json(_system: str, _user: str, **_kwargs) -> dict:
 class TestGenerateNovel:
     def test_returns_novel(self):
         with patch("src.generator.chat_json", side_effect=_mock_chat_json):
-            novel = generate_novel("一颗流星", NovelStyle.SCIFI)
+            novel = generate_novel("一颗流星", NovelStyle.SLOT_2)
 
         assert isinstance(novel, Novel)
-        assert novel.style == NovelStyle.SCIFI
+        assert novel.style == NovelStyle.SLOT_2
         assert novel.title == "测试小说"
         assert novel.attempt == 1
 
     def test_attempt_is_recorded(self):
         with patch("src.generator.chat_json", side_effect=_mock_chat_json):
-            novel = generate_novel("一颗流星", NovelStyle.ROMANCE, attempt=2)
+            novel = generate_novel("一颗流星", NovelStyle.SLOT_1, attempt=2)
 
         assert novel.attempt == 2
 
@@ -39,7 +39,7 @@ class TestGenerateNovel:
             return {"content": "内容", "writing_approach": "思路"}
 
         with patch("src.generator.chat_json", side_effect=_no_title):
-            novel = generate_novel("seed", NovelStyle.MYSTERY)
+            novel = generate_novel("seed", NovelStyle.SLOT_3)
 
         assert novel.title == "无题"
 
