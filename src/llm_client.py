@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from dataclasses import dataclass
 from typing import Any
 
@@ -159,14 +160,89 @@ def chat_json(system: str, user: str, *, temperature: float = 0.2) -> dict:
     """Send a chat completion request and parse the JSON response."""
     settings = get_settings(strict=True)
     client = _get_client(settings)
-    response = client.chat.completions.create(
-        model=settings.model,
-        messages=[
-            {"role": "system", "content": system},
-            {"role": "user", "content": user},
-        ],
-        temperature=temperature,
-        response_format={"type": "json_object"},
+
+    def _extract_json_object(text: str) -> str | None:
+        """Best-effort extraction of a JSON object from model text.
+
+        Some OpenAI-compatible providers may ignore `response_format` or wrap the
+        JSON in markdown fences / extra commentary.
+        """
+
+        if not text:
+            return None
+
+        # ```json ... ``` or ``` ... ``` blocks
+        fence = re.search(r"```(?:json)?\s*(\{[\s\S]*?\})\s*```", text, re.IGNORECASE)
+        if fence:
+            return fence.group(1).strip()
+
+        # Find the first balanced {...} object.
+        start = text.find("{")
+        if start == -1:
+            return None
+        depth = 0
+        in_string = False
+        escape = False
+        for idx in range(start, len(text)):
+            ch = text[idx]
+            if in_string:
+                if escape:
+                    escape = False
+                elif ch == "\\":
+                    escape = True
+                elif ch == '"':
+                    in_string = False
+                continue
+
+            if ch == '"':
+                in_string = True
+                continue
+            if ch == "{":
+                depth += 1
+            elif ch == "}":
+                depth -= 1
+                if depth == 0:
+                    return text[start : idx + 1].strip()
+        return None
+
+    def _request(payload_user: str) -> str:
+        response = client.chat.completions.create(
+            model=settings.model,
+            messages=[
+                {"role": "system", "content": system},
+                {"role": "user", "content": payload_user},
+            ],
+            temperature=temperature,
+            response_format={"type": "json_object"},
+        )
+        return response.choices[0].message.content or "{}"
+
+    last_error: Exception | None = None
+    for attempt in range(2):
+        payload_user = user
+        if attempt == 1:
+            payload_user = (
+                user
+                + "\n\nIMPORTANT: Reply with ONLY one valid JSON object. "
+                "Do not include markdown fences, comments, trailing commas, or any extra text. "
+                "All property names and strings must use double quotes."
+            )
+
+        raw = _request(payload_user)
+        try:
+            return json.loads(raw)
+        except json.JSONDecodeError as exc:
+            last_error = exc
+            extracted = _extract_json_object(raw)
+            if extracted:
+                try:
+                    return json.loads(extracted)
+                except json.JSONDecodeError as exc2:
+                    last_error = exc2
+
+    # Final fallback: raise a clearer error.
+    raise json.JSONDecodeError(
+        f"Model did not return valid JSON. Last error: {last_error}",
+        doc=str(raw)[:2000],
+        pos=0,
     )
-    raw = response.choices[0].message.content or "{}"
-    return json.loads(raw)

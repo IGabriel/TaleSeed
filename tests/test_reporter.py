@@ -53,6 +53,7 @@ class TestSaveReport:
 
         assert md_path.exists()
         assert json_path.exists()
+        assert (tmp_path / "novel_01.md").exists()
 
     def test_json_is_valid(self, tmp_path: Path):
         report = _make_report()
@@ -69,3 +70,4 @@ class TestSaveReport:
 
         assert out_dir.exists()
         assert md_path.exists()
+        assert (out_dir / "novel_01.md").exists()

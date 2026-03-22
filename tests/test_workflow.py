@@ -21,6 +21,11 @@ def _make_novel(style: NovelStyle, attempt: int = 1) -> Novel:
     )
 
 
+def _make_plan(_seed: str, style: NovelStyle, **_kw):
+    # Minimal plan-like object for tests; workflow only passes it through.
+    return {"style": style}
+
+
 def _make_review(passed: bool) -> ReviewResult:
     score = 8.0 if passed else 4.0
     status = ReviewStatus.PASSED if passed else ReviewStatus.FAILED
@@ -38,16 +43,15 @@ def _make_review(passed: bool) -> ReviewResult:
 
 class TestWorkflow:
     def test_run_returns_report(self, tmp_path: Path):
-        call_count = {"n": 0}
-
-        def fake_generate(seed, style, attempt=1):
+        def fake_draft(seed, style, plan, attempt=1, rewrite_reason=None):
             return _make_novel(style, attempt)
 
         def fake_review(novel):
             return _make_review(passed=True)
 
         with (
-            patch("src.workflow.generate_novel", side_effect=fake_generate),
+            patch("src.workflow.develop_plan", side_effect=_make_plan),
+            patch("src.workflow.draft_novel", side_effect=fake_draft),
             patch("src.workflow.review_novel", side_effect=fake_review),
         ):
             report = run(_SEED, output_dir=tmp_path, verbose=False)
@@ -56,14 +60,15 @@ class TestWorkflow:
         assert len(report.records) == 10
 
     def test_run_covers_all_styles(self, tmp_path: Path):
-        def fake_generate(seed, style, attempt=1):
+        def fake_draft(seed, style, plan, attempt=1, rewrite_reason=None):
             return _make_novel(style, attempt)
 
         def fake_review(novel):
             return _make_review(passed=True)
 
         with (
-            patch("src.workflow.generate_novel", side_effect=fake_generate),
+            patch("src.workflow.develop_plan", side_effect=_make_plan),
+            patch("src.workflow.draft_novel", side_effect=fake_draft),
             patch("src.workflow.review_novel", side_effect=fake_review),
         ):
             report = run(_SEED, output_dir=tmp_path, verbose=False)
@@ -73,10 +78,10 @@ class TestWorkflow:
 
     def test_failed_review_triggers_rewrite(self, tmp_path: Path):
         """A failing review should cause one rewrite before success."""
-        call_counts: dict[NovelStyle, int] = {s: 0 for s in NovelStyle}
+        draft_counts: dict[NovelStyle, int] = {s: 0 for s in NovelStyle}
 
-        def fake_generate(seed, style, attempt=1):
-            call_counts[style] += 1
+        def fake_draft(seed, style, plan, attempt=1, rewrite_reason=None):
+            draft_counts[style] += 1
             return _make_novel(style, attempt)
 
         review_calls: dict[NovelStyle, int] = {s: 0 for s in NovelStyle}
@@ -89,7 +94,8 @@ class TestWorkflow:
             return _make_review(passed=True)
 
         with (
-            patch("src.workflow.generate_novel", side_effect=fake_generate),
+            patch("src.workflow.develop_plan", side_effect=_make_plan),
+            patch("src.workflow.draft_novel", side_effect=fake_draft),
             patch("src.workflow.review_novel", side_effect=fake_review),
         ):
             report = run(_SEED, max_retries=3, output_dir=tmp_path, verbose=False)
@@ -101,10 +107,10 @@ class TestWorkflow:
 
     def test_max_retries_respected(self, tmp_path: Path):
         """When all reviews fail, the workflow should stop after max_retries."""
-        call_counts: dict[NovelStyle, int] = {s: 0 for s in NovelStyle}
+        draft_counts: dict[NovelStyle, int] = {s: 0 for s in NovelStyle}
 
-        def fake_generate(seed, style, attempt=1):
-            call_counts[style] += 1
+        def fake_draft(seed, style, plan, attempt=1, rewrite_reason=None):
+            draft_counts[style] += 1
             return _make_novel(style, attempt)
 
         def fake_review(novel):
@@ -113,7 +119,8 @@ class TestWorkflow:
         max_retries = 2
 
         with (
-            patch("src.workflow.generate_novel", side_effect=fake_generate),
+            patch("src.workflow.develop_plan", side_effect=_make_plan),
+            patch("src.workflow.draft_novel", side_effect=fake_draft),
             patch("src.workflow.review_novel", side_effect=fake_review),
         ):
             report = run(
@@ -121,20 +128,23 @@ class TestWorkflow:
             )
 
         for record in report.records:
-            assert call_counts[record.novel.style] == max_retries
+            assert draft_counts[record.novel.style] == max_retries
 
     def test_report_files_created(self, tmp_path: Path):
-        def fake_generate(seed, style, attempt=1):
+        def fake_draft(seed, style, plan, attempt=1, rewrite_reason=None):
             return _make_novel(style, attempt)
 
         def fake_review(novel):
             return _make_review(passed=True)
 
         with (
-            patch("src.workflow.generate_novel", side_effect=fake_generate),
+            patch("src.workflow.develop_plan", side_effect=_make_plan),
+            patch("src.workflow.draft_novel", side_effect=fake_draft),
             patch("src.workflow.review_novel", side_effect=fake_review),
         ):
             run(_SEED, output_dir=tmp_path, verbose=False)
 
         assert (tmp_path / "report.md").exists()
         assert (tmp_path / "report.json").exists()
+        for idx in range(1, 11):
+            assert (tmp_path / f"novel_{idx:02d}.md").exists()

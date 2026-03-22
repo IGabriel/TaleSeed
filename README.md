@@ -8,10 +8,11 @@ Plant a seed of imagination, grow a novel. AI-powered story generation from a si
 
 TaleSeed takes an initial creative idea ("脑洞") and uses a large language model to automatically:
 
-1. **Generate** ten short novels that are clearly different from each other (style/genre unrestricted).
-2. **Review** each novel with the LLM acting as a literary critic.
-3. **Rewrite** any novel that fails the quality review (score < 6/10) — up to a configurable number of retries.
-4. **Report** — produce a Markdown + JSON report covering novel name, content summary, writing style, and creative approach.
+1. **Plan** each novel: decide writing technique, main characters, and a chapter outline, with evaluation and retries.
+2. **Draft** a long-form novel following the outline (target ~10k Chinese characters; auto-extends to at least ~9k).
+3. **Review** each novel with the LLM acting as a literary critic.
+4. **Rewrite** drafts that fail review (the plan is kept; only the draft is rewritten) — up to a configurable number of retries.
+5. **Report** — produce a Markdown + JSON report and also save each novel as an individual `.md` file.
 
 ## Installation
 
@@ -21,7 +22,19 @@ pip install -r requirements.txt
 
 ## Configuration
 
-Set the following environment variables (or place them in a `.env` file):
+This repo includes copy-ready env templates (see `env_templates/`). Recommended flow: copy one template to `.env`, then fill in your API key / base URL / model:
+
+```bash
+# Example: use Alibaba Cloud Bailian (DashScope) via the OpenAI-compatible endpoint
+cp env_templates/qwen_bailian.env_template .env
+
+# Or: use OpenAI
+# cp env_templates/openai.env_template .env
+
+# Then edit .env and fill your secrets
+```
+
+You can also set the following environment variables (or place them in a `.env` file):
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
@@ -31,6 +44,9 @@ Set the following environment variables (or place them in a `.env` file):
 | `TALE_LLM_MODEL` | ❌ | — | Model name (overrides `*_MODEL`) |
 | `TALE_OUTPUT_DIR` | ❌ | `output/` | Directory for generated reports |
 | `TALE_MAX_RETRIES` | ❌ | `3` | Maximum rewrites per novel on failed review |
+
+Notes:
+- `TALE_MAX_RETRIES` is used as the upper bound for both (a) planning retries (technique/characters/outline) and (b) draft rewrites after a failed review.
 
 Provider-specific variables
 --------------------------
@@ -63,7 +79,11 @@ python main.py "神秘的量子纠缠让两个平行世界开始交汇" \
     --max-retries 5
 ```
 
-The report is saved to `output/report.md` (Markdown) and `output/report.json` (JSON) by default.
+Outputs are saved under `output/` by default:
+
+- `output/report.md` (Markdown report)
+- `output/report.json` (JSON report)
+- `output/novel_01.md` ~ `output/novel_10.md` (one Markdown file per novel)
 
 ### Report Contents
 

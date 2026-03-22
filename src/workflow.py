@@ -16,7 +16,7 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
-from src.generator import generate_novel
+from src.generator import develop_plan, draft_novel
 from src.models import NovelRecord, NovelStyle, Report
 from src.reporter import save_report
 from src.reviewer import review_novel
@@ -64,8 +64,11 @@ def run(
         log(f"[生成] {style.value}")
 
         attempt = 1
-        novel = generate_novel(seed, style, attempt=attempt)
-        log(f"  ✓ 生成完成：《{novel.title}》（第 {attempt} 次）")
+        plan = develop_plan(seed, style, max_retries=max_retries)
+        log(f"  ✓ 策划完成：写作手法/角色/大纲已敲定")
+
+        novel = draft_novel(seed, style, plan, attempt=attempt)
+        log(f"  ✓ 正文完成：《{novel.title}》（第 {attempt} 次）")
 
         review = review_novel(novel)
         log(
@@ -79,7 +82,13 @@ def run(
             rewrite_history.append(novel)
 
             attempt += 1
-            novel = generate_novel(seed, style, attempt=attempt)
+            novel = draft_novel(
+                seed,
+                style,
+                plan,
+                attempt=attempt,
+                rewrite_reason=review.rewrite_reason,
+            )
             log(f"  ✓ 重写完成：《{novel.title}》（第 {attempt} 次）")
 
             review = review_novel(novel)
